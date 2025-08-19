@@ -1,5 +1,6 @@
 import { getRepos } from "../container";
 import HighlightPie from "../ui/components/HighlightPie";
+import { Chat } from "../ui/components/Chat";
 
 async function getHighlights() {
   const { highlights } = getRepos();
@@ -25,9 +26,8 @@ export default async function Home() {
           </section>
         </div>
 
-        <section className="mt-8 bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold mb-4 text-blue-900">AIチャット</h2>
-          <p className="text-gray-500">Coming Soon...</p>
+        <section className="mt-8">
+          <Chat />
         </section>
       </div>
     </main>

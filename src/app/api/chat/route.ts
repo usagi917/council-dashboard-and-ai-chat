@@ -1,0 +1,98 @@
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import {
+  getRepositories,
+  getVectorSearch,
+  getEmbeddingClient,
+} from "../../../container";
+import { retrieve } from "../../../ai/retriever";
+import { buildPrompt } from "../../../ai/prompt";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    if (!body.question || typeof body.question !== "string") {
+      return NextResponse.json(
+        { error: "Question is required and must be a string" },
+        { status: 400 }
+      );
+    }
+
+    const { question } = body;
+    const { speechesRepo } = getRepositories();
+    const vectorSearch = getVectorSearch();
+    const embeddingClient = getEmbeddingClient();
+
+    // Retrieve relevant chunks
+    const retrievedChunks = await retrieve(
+      question,
+      5,
+      vectorSearch,
+      speechesRepo,
+      embeddingClient
+    );
+    const chunks = retrievedChunks.map((r) => r.chunk);
+
+    // Build prompt
+    const prompt = buildPrompt({ question, chunks });
+
+    // If no chunks found, return immediate response
+    if (chunks.length === 0) {
+      return new NextResponse("情報がありません。", {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+        },
+      });
+    }
+
+    // Stream response using OpenAI
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: prompt.system },
+        { role: "user", content: prompt.user },
+      ],
+      stream: true,
+    });
+
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || "";
+            if (content) {
+              controller.enqueue(encoder.encode(content));
+            }
+          }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return new NextResponse(readable, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
+  } catch (error) {
+    console.error("Chat API error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
