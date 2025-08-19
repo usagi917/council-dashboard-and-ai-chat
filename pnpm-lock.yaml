@@ -13,6 +13,9 @@ importers:
       next:
         specifier: 15.1.7
         version: 15.1.7(@babel/core@7.28.3)(@playwright/test@1.54.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      openai:
+        specifier: ^5.12.2
+        version: 5.12.2(ws@8.18.3)
       react:
         specifier: ^19.0.0
         version: 19.1.1
@@ -3393,6 +3396,21 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
+  openai@5.12.2:
+    resolution:
+      {
+        integrity: sha512-xqzHHQch5Tws5PcKR2xsZGX9xtch+JQFz5zb14dGqlshmmDAFBFEWmeIpf7wVqWV+w7Emj7jRgkNJakyKE0tYQ==,
+      }
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+
   optionator@0.9.4:
     resolution:
       {
@@ -6590,6 +6608,10 @@ snapshots:
       call-bound: 1.0.4
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
+
+  openai@5.12.2(ws@8.18.3):
+    optionalDependencies:
+      ws: 8.18.3
 
   optionator@0.9.4:
     dependencies:

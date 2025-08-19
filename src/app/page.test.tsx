@@ -14,7 +14,11 @@ vi.mock("chart.js", () => ({
 }));
 
 vi.mock("react-chartjs-2", () => ({
-  Pie: ({ data }: { data: { labels: string[]; datasets: Array<{ data: number[] }> } }) => (
+  Pie: ({
+    data,
+  }: {
+    data: { labels: string[]; datasets: Array<{ data: number[] }> };
+  }) => (
     <div data-testid="pie-chart">
       <div data-testid="chart-labels">{data.labels.join(",")}</div>
       <div data-testid="chart-data">{data.datasets[0].data.join(",")}</div>
@@ -28,16 +32,16 @@ const HomeComponent = ({ highlights }: { highlights: Highlight[] }) => (
       <h1 className="text-4xl font-bold text-blue-900 mb-8">
         Hakusan Dashboard
       </h1>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <HighlightPie highlights={highlights} />
-        
+
         <section className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4 text-blue-900">SNS投稿</h2>
           <p className="text-gray-500">Coming Soon...</p>
         </section>
       </div>
-      
+
       <section className="mt-8 bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-bold mb-4 text-blue-900">AIチャット</h2>
         <p className="text-gray-500">Coming Soon...</p>
@@ -74,14 +78,19 @@ describe("Home Page", () => {
 
     await waitFor(() => {
       const title = screen.getByRole("heading", { level: 1 });
-      expect(title).toHaveClass("text-4xl", "font-bold", "text-blue-900", "mb-8");
+      expect(title).toHaveClass(
+        "text-4xl",
+        "font-bold",
+        "text-blue-900",
+        "mb-8"
+      );
     });
 
     // Check for section headings
     expect(screen.getByText("実績ハイライト")).toBeInTheDocument();
     expect(screen.getByText("SNS投稿")).toBeInTheDocument();
     expect(screen.getByText("AIチャット")).toBeInTheDocument();
-    
+
     // Check for coming soon placeholders
     expect(screen.getAllByText("Coming Soon...")).toHaveLength(2);
   });
