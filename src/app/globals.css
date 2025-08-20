@@ -1,3 +1,174 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Apple San Francisco Font Stack */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+/* Base layer improvements */
+@layer base {
+  html {
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1,
+      "ss01" 1;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+      "Helvetica Neue", Arial, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: theme("colors.apple.gray.900");
+    background: theme("colors.system.background");
+    line-height: 1.5;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: theme("colors.apple.gray.300");
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme("colors.apple.gray.400");
+  }
+
+  /* Focus styles */
+  *:focus {
+    outline: 2px solid theme("colors.apple.blue");
+    outline-offset: 2px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Selection styles */
+  ::selection {
+    background: theme("colors.apple.blue") / 0.2;
+    color: theme("colors.apple.gray.900");
+  }
+}
+
+/* Component layer for reusable patterns */
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-apple bg-white/70 border border-white/20 rounded-apple-lg shadow-apple-card;
+  }
+
+  .glass-button {
+    @apply backdrop-blur-apple bg-white/80 border border-white/30 rounded-apple 
+           text-apple-gray-900 font-medium
+           hover:bg-white/90 hover:border-white/40
+           active:scale-95 transition-all duration-200;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-apple-blue to-apple-indigo bg-clip-text text-transparent;
+  }
+
+  .loading-dots {
+    @apply flex space-x-1;
+  }
+
+  .loading-dots div {
+    @apply w-2 h-2 bg-apple-blue rounded-full animate-bounce;
+  }
+
+  .loading-dots div:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .loading-dots div:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  /* Status indicators */
+  .status-online {
+    @apply w-2 h-2 bg-apple-green rounded-full animate-pulse;
+  }
+
+  .status-busy {
+    @apply w-2 h-2 bg-apple-orange rounded-full animate-pulse;
+  }
+
+  .status-offline {
+    @apply w-2 h-2 bg-apple-gray-400 rounded-full;
+  }
+}
+
+/* Utility layer for one-off styles */
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  }
+
+  .text-shadow {
+    text-shadow:
+      0 1px 3px rgb(0 0 0 / 0.1),
+      0 1px 2px rgb(0 0 0 / 0.06);
+  }
+
+  .text-shadow-lg {
+    text-shadow:
+      0 4px 6px rgb(0 0 0 / 0.07),
+      0 2px 4px rgb(0 0 0 / 0.06);
+  }
+
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Improved focus visible for better accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-apple-blue focus:ring-offset-2 focus:ring-offset-white;
+  }
+
+  .focus-ring-inset {
+    @apply focus:outline-none focus:ring-2 focus:ring-inset focus:ring-apple-blue;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse,
+  .animate-bounce,
+  .animate-spin,
+  .animate-ping {
+    animation: none;
+  }
+}
