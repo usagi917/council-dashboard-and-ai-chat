@@ -30,6 +30,9 @@ describe("ingest script", () => {
   beforeEach(() => {
     mockFileReader = createMockFileReader();
     vi.clearAllMocks();
+    // Suppress console output during tests
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   test("should discover and parse HTML files in directory", async () => {

@@ -16,13 +16,17 @@ describe("Chat", () => {
     expect(
       screen.getByPlaceholderText("質問を入力してください...")
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "送信" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "送信 Send message" })
+    ).toBeInTheDocument();
   });
 
   it("should disable send button when input is empty", () => {
     render(<Chat />);
 
-    const sendButton = screen.getByRole("button", { name: "送信" });
+    const sendButton = screen.getByRole("button", {
+      name: "送信 Send message",
+    });
     expect(sendButton).toBeDisabled();
   });
 
@@ -30,7 +34,9 @@ describe("Chat", () => {
     render(<Chat />);
 
     const input = screen.getByPlaceholderText("質問を入力してください...");
-    const sendButton = screen.getByRole("button", { name: "送信" });
+    const sendButton = screen.getByRole("button", {
+      name: "送信 Send message",
+    });
 
     fireEvent.change(input, { target: { value: "test question" } });
 
@@ -47,7 +53,9 @@ describe("Chat", () => {
     render(<Chat />);
 
     const input = screen.getByPlaceholderText("質問を入力してください...");
-    const sendButton = screen.getByRole("button", { name: "送信" });
+    const sendButton = screen.getByRole("button", {
+      name: "送信 Send message",
+    });
 
     fireEvent.change(input, { target: { value: "test question" } });
     fireEvent.click(sendButton);
@@ -71,12 +79,14 @@ describe("Chat", () => {
       setTimeout(() => resolve(new Response("回答")), 100);
     });
 
-    vi.mocked(fetch).mockResolvedValueOnce(mockResponse as any);
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse as unknown as Response);
 
     render(<Chat />);
 
     const input = screen.getByPlaceholderText("質問を入力してください...");
-    const sendButton = screen.getByRole("button", { name: "送信" });
+    const sendButton = screen.getByRole("button", {
+      name: "送信 Send message",
+    });
 
     fireEvent.change(input, { target: { value: "test question" } });
     fireEvent.click(sendButton);
@@ -90,7 +100,9 @@ describe("Chat", () => {
     render(<Chat />);
 
     const input = screen.getByPlaceholderText("質問を入力してください...");
-    const sendButton = screen.getByRole("button", { name: "送信" });
+    const sendButton = screen.getByRole("button", {
+      name: "送信 Send message",
+    });
 
     fireEvent.change(input, { target: { value: "test question" } });
     fireEvent.click(sendButton);
