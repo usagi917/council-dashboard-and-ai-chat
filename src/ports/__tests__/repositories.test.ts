@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import type { SpeechesRepo, HighlightsRepo, SnsRepo, EmbeddingsRepo } from "../repositories";
+import type {
+  SpeechesRepo,
+  HighlightsRepo,
+  SnsRepo,
+  EmbeddingsRepo,
+} from "../repositories";
 import type {
   Speech,
   SpeechChunk,
