@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextRequest } from "next/server";
-import { GET } from "../../../app/api/instagram/latest/route";
+import { GET } from "../../app/api/instagram/latest/route";
 
 describe("/api/instagram/latest", () => {
   beforeEach(() => {
