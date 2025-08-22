@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { kmeans } from "./cluster";
+import { kmeans, generateClusterLabel } from "./cluster";
 
 describe("kmeans clustering", () => {
   it("should cluster vectors into k groups", () => {
@@ -90,5 +90,73 @@ describe("kmeans clustering", () => {
     expect(result.labels).toHaveLength(4);
     expect(result.centroids).toHaveLength(2);
     expect(result.centroids[0]).toHaveLength(dim);
+  });
+
+  it("should default to K=6 when no k provided", () => {
+    const vectors = Array.from({ length: 12 }, () => [
+      Math.random(),
+      Math.random(),
+    ]);
+
+    const result = kmeans(vectors, 6, 42);
+
+    expect(result.centroids).toHaveLength(6);
+  });
+});
+
+describe("generateClusterLabel", () => {
+  it("should generate labels from Japanese text chunks", () => {
+    const chunks = [
+      "教育予算について議論しました。",
+      "学校教育の充実が必要です。",
+      "教育環境の改善を求めます。",
+    ];
+
+    const label = generateClusterLabel(chunks);
+
+    expect(label).toBeTruthy();
+    expect(typeof label).toBe("string");
+    expect(label.length).toBeGreaterThan(0);
+    // Should include education-related terms
+    expect(label).toMatch(/教育/);
+  });
+
+  it("should handle empty chunks array", () => {
+    const label = generateClusterLabel([]);
+
+    expect(label).toBe("その他");
+  });
+
+  it("should filter out Japanese stopwords", () => {
+    const chunks = [
+      "教育システムのテスト",
+      "教育システムの改善",
+      "教育システムの充実",
+    ];
+
+    const label = generateClusterLabel(chunks);
+
+    // Should include meaningful words like 教育, システム, テスト
+    expect(label).toMatch(/教育|システム|テスト/);
+  });
+
+  it("should handle chunks with mixed content", () => {
+    const chunks = [
+      "市民福祉について話し合いました。",
+      "福祉政策の見直しが必要です。",
+      "高齢者福祉を充実させたい。",
+    ];
+
+    const label = generateClusterLabel(chunks);
+
+    expect(label).toMatch(/福祉/);
+  });
+
+  it("should return その他 for chunks with no meaningful content", () => {
+    const chunks = ["...", "___", "   "];
+
+    const label = generateClusterLabel(chunks);
+
+    expect(label).toBe("その他");
   });
 });

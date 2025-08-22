@@ -109,3 +109,132 @@ function euclideanDistance(a: number[], b: number[]): number {
   }
   return Math.sqrt(sum);
 }
+
+/**
+ * Generate cluster label from Japanese text chunks
+ * @param chunks - Array of text chunks in the cluster
+ * @returns Generated label string
+ */
+export function generateClusterLabel(chunks: string[]): string {
+  if (chunks.length === 0) {
+    return "その他";
+  }
+
+  // Japanese stopwords and common patterns to filter out
+  const stopwords = new Set([
+    "これ",
+    "それ",
+    "あれ",
+    "この",
+    "その",
+    "あの",
+    "です",
+    "である",
+    "だ",
+    "である",
+    "します",
+    "した",
+    "する",
+    "ます",
+    "まし",
+    "ました",
+    "について",
+    "に",
+    "を",
+    "が",
+    "は",
+    "と",
+    "で",
+    "から",
+    "まで",
+    "より",
+    "へ",
+    "や",
+    "の",
+    "か",
+    "も",
+    "ば",
+    "て",
+    "に",
+    "な",
+    "ね",
+    "よ",
+    "ん",
+    "こと",
+    "もの",
+    "こちら",
+    "そちら",
+    "あちら",
+    "ここ",
+    "そこ",
+    "あそこ",
+    "いる",
+    "ある",
+    "なる",
+    "いう",
+    "くる",
+    "できる",
+    "みる",
+    "れで",
+    "れです",
+    "はテ",
+    "テス",
+    "スト",
+    "トで",
+    "でし",
+    "した",
+    "ちら",
+  ]);
+
+  // Extract nouns and meaningful words from all chunks
+  const wordCounts = new Map<string, number>();
+
+  chunks.forEach((chunk) => {
+    // Simple tokenization for Japanese text
+    // First remove punctuation and then split into potential words
+    const cleanedText = chunk.replace(/[。！？、，\s]/g, "");
+
+    // Extract potential meaningful words (2+ characters, containing kanji/hiragana/katakana)
+    const words: string[] = [];
+
+    // Simple approach: look for patterns of 2-4 consecutive Japanese characters
+    for (let i = 0; i < cleanedText.length - 1; i++) {
+      for (let len = 2; len <= Math.min(4, cleanedText.length - i); len++) {
+        const word = cleanedText.substring(i, i + len);
+        if (
+          /^[\u4e00-\u9faf\u3040-\u309f\u30a0-\u30ff]+$/.test(word) &&
+          !stopwords.has(word)
+        ) {
+          words.push(word);
+        }
+      }
+    }
+
+    words.forEach((word) => {
+      wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+    });
+  });
+
+  if (wordCounts.size === 0) {
+    return "その他";
+  }
+
+  // Get top 3 most frequent words
+  const topWords = Array.from(wordCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([word]) => word);
+
+  if (topWords.length === 0) {
+    return "その他";
+  }
+
+  // Create a meaningful label
+  if (topWords.length === 1) {
+    return topWords[0];
+  } else if (topWords.length === 2) {
+    return `${topWords[0]}・${topWords[1]}`;
+  } else {
+    return `${topWords[0]}・${topWords[1]}関連`;
+  }
+}
