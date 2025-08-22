@@ -19,4 +19,26 @@ test.describe("Graph Page", () => {
     // Check for empty state message
     await expect(page.getByText("データが見つかりません")).toBeVisible();
   });
+
+  test("should navigate back to home from graph page", async ({ page }) => {
+    await page.goto("/graph");
+
+    // Click the home navigation link
+    await page.click("text=ホームに戻る");
+
+    // Should be on home page
+    await expect(page).toHaveURL("/");
+    await expect(page.getByText("白山市政ダッシュボード")).toBeVisible();
+  });
+
+  test("should navigate to graph page from home", async ({ page }) => {
+    await page.goto("/");
+
+    // Click the graph navigation link
+    await page.click("text=詳細を見る");
+
+    // Should be on graph page
+    await expect(page).toHaveURL("/graph");
+    await expect(page.getByText("発言分析グラフ")).toBeVisible();
+  });
 });

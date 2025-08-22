@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import Link from "next/link";
 import type { Highlight, SpeechChunk } from "../../domain/types";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -135,6 +136,31 @@ export default function GraphView({
 
   return (
     <div className="space-y-8">
+      {/* Navigation Header */}
+      <div className="flex items-center justify-between mb-4">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-4 py-2 text-callout font-medium text-apple-blue hover:text-apple-blue/80 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-label="戻る"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          ホームに戻る
+        </Link>
+      </div>
+
       {/* Pie Chart Section */}
       <div className="backdrop-blur-apple bg-white/70 border border-white/20 rounded-apple-lg p-8 shadow-apple-card animate-scale-in">
         <div className="flex items-center justify-between mb-8">

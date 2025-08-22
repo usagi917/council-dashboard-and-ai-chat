@@ -67,4 +67,12 @@ describe("HighlightPie", () => {
       expect(screen.getByText(`${highlight.count}件`)).toBeInTheDocument();
     });
   });
+
+  it("should render navigation link to graph page", () => {
+    render(<HighlightPie highlights={mockHighlights} />);
+
+    const graphLink = screen.getByText("詳細を見る");
+    expect(graphLink).toBeInTheDocument();
+    expect(graphLink.closest("a")).toHaveAttribute("href", "/graph");
+  });
 });

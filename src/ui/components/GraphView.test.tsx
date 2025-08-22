@@ -1,6 +1,39 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import GraphView from "./GraphView";
+
+// Mock Chart.js to avoid canvas issues in tests
+vi.mock("chart.js", () => ({
+  Chart: {
+    register: vi.fn(),
+  },
+  ArcElement: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+}));
+
+vi.mock("react-chartjs-2", () => ({
+  Pie: ({
+    data,
+    options,
+  }: {
+    data: { labels: string[]; datasets: Array<{ data: number[] }> };
+    options?: any;
+  }) => (
+    <div
+      data-testid="pie-chart"
+      onClick={(e) => {
+        // Simulate pie chart click
+        if (options?.onClick) {
+          options.onClick(e, [{ index: 0 }]);
+        }
+      }}
+    >
+      <div data-testid="chart-labels">{data.labels.join(",")}</div>
+      <div data-testid="chart-data">{data.datasets[0].data.join(",")}</div>
+    </div>
+  ),
+}));
 
 const mockHighlights = [
   { clusterLabel: "教育政策", count: 5, sampleChunkId: 1 },
@@ -78,5 +111,15 @@ describe("GraphView", () => {
     expect(link).toHaveAttribute("href", "https://example.com/speech1");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("renders navigation link back to home", () => {
+    render(
+      <GraphView highlights={mockHighlights} sampleChunks={mockSampleChunks} />
+    );
+
+    const homeLink = screen.getByText("ホームに戻る");
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink.closest("a")).toHaveAttribute("href", "/");
   });
 });

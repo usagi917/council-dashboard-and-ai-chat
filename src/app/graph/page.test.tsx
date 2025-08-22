@@ -1,6 +1,36 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// Mock Chart.js to avoid canvas issues in tests
+vi.mock("chart.js", () => ({
+  Chart: {
+    register: vi.fn(),
+  },
+  ArcElement: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+}));
+
+vi.mock("react-chartjs-2", () => ({
+  Pie: ({
+    data,
+  }: {
+    data: { labels: string[]; datasets: Array<{ data: number[] }> };
+  }) => (
+    <div data-testid="pie-chart">
+      <div data-testid="chart-labels">{data.labels.join(",")}</div>
+      <div data-testid="chart-data">{data.datasets[0].data.join(",")}</div>
+    </div>
+  ),
+}));
+
+// Mock container
+vi.mock("../../container", () => ({
+  getRepositories: vi.fn(),
+}));
+
 import GraphPage from "./page";
+import { getRepositories } from "../../container";
 
 // モックデータ
 const mockHighlights = [
@@ -25,12 +55,7 @@ const mockSpeechChunks = [
   },
 ];
 
-// モック関数をglobalな位置で設定
-const mockGetRepositories = vi.fn();
-
-vi.mock("../../container", () => ({
-  getRepositories: mockGetRepositories,
-}));
+const mockGetRepositories = vi.mocked(getRepositories);
 
 describe("GraphPage", () => {
   beforeEach(() => {
@@ -42,9 +67,19 @@ describe("GraphPage", () => {
     mockGetRepositories.mockReturnValue({
       highlightsRepo: {
         list: vi.fn().mockResolvedValue(mockHighlights),
+        upsert: vi.fn(),
+        clear: vi.fn(),
       },
       speechesRepo: {
+        list: vi.fn(),
         getChunksByIds: vi.fn().mockResolvedValue(mockSpeechChunks),
+        getAllChunks: vi.fn(),
+      },
+      snsRepo: {
+        latest: vi.fn(),
+      },
+      embeddingsRepo: {
+        getAllEmbeddings: vi.fn(),
       },
     });
 
@@ -60,9 +95,19 @@ describe("GraphPage", () => {
     mockGetRepositories.mockReturnValue({
       highlightsRepo: {
         list: vi.fn().mockResolvedValue([]),
+        upsert: vi.fn(),
+        clear: vi.fn(),
       },
       speechesRepo: {
+        list: vi.fn(),
         getChunksByIds: vi.fn().mockResolvedValue([]),
+        getAllChunks: vi.fn(),
+      },
+      snsRepo: {
+        latest: vi.fn(),
+      },
+      embeddingsRepo: {
+        getAllEmbeddings: vi.fn(),
       },
     });
 
