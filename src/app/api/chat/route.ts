@@ -7,6 +7,7 @@ import {
 } from "../../../container";
 import { retrieve } from "../../../ai/retriever";
 import { buildPrompt } from "../../../ai/prompt";
+import { getMessage } from "../../../i18n/ja";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -46,20 +47,31 @@ export async function POST(request: NextRequest) {
     // Build prompt
     const prompt = buildPrompt({ question, chunks });
 
-    // If no chunks found, return immediate response
+    // If no chunks found, return immediate response with i18n message
     if (chunks.length === 0) {
-      return new NextResponse("情報がありません。", {
+      const noInfoMessage = getMessage("errors.noInformation");
+      return new NextResponse(noInfoMessage, {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
         },
       });
     }
 
-    // Stream response using OpenAI
+    // Strict mode: Enhanced prompt with explicit source URL requirements
+    const expectedUrls = chunks.map((chunk) => chunk.sourceUrl);
+    const urlList = expectedUrls.join(", ");
+
+    // Add strict citation requirements to system prompt
+    const enhancedSystemPrompt =
+      prompt.system +
+      `
+
+重要: 回答には以下のURL群から必ず1つ以上を含めてください: ${urlList}
+URLが含まれていない回答は「情報がありません。」に置き換えられます。`;
     const stream = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: prompt.system },
+        { role: "system", content: enhancedSystemPrompt },
         { role: "user", content: prompt.user },
       ],
       stream: true,

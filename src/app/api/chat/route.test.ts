@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "./route";
 import { NextRequest } from "next/server";
+import { getMessage } from "../../../i18n/ja";
 
 // Mock the dependencies
 vi.mock("../../../container", () => ({
@@ -23,6 +24,10 @@ vi.mock("openai", () => ({
       },
     },
   })),
+}));
+
+vi.mock("../../../i18n/ja", () => ({
+  getMessage: vi.fn(),
 }));
 
 const mockSpeechesRepo = {
@@ -52,6 +57,13 @@ const mockEmbeddingClient = {
 describe("/api/chat POST", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(getMessage).mockImplementation((key: string) => {
+      const messages = {
+        "errors.noInformation": "情報がありません。",
+        "errors.chatError": "チャットでエラーが発生しました",
+      };
+      return messages[key as keyof typeof messages] || "エラーが発生しました";
+    });
   });
 
   it('should return "情報がありません" when no chunks found', async () => {
@@ -72,6 +84,7 @@ describe("/api/chat POST", () => {
 
     const text = await response.text();
     expect(text).toContain("情報がありません");
+    expect(getMessage).toHaveBeenCalledWith("errors.noInformation");
   });
 
   it("should validate request body", async () => {
@@ -97,4 +110,7 @@ describe("/api/chat POST", () => {
 
     expect(response.status).toBe(400);
   });
+
+  // NOTE: Enhanced system prompt functionality is verified through integration tests
+  // Strict mode adds citation requirements to prevent response deviation
 });

@@ -66,5 +66,8 @@ describe("buildPrompt", () => {
     expect(result.system).toContain("必ず");
     expect(result.system).toMatch(/引用|出典|source_url/);
     expect(result.system).toContain("情報がありません");
+    expect(result.system).toContain(
+      "出典URLが含まれていない回答は無効とみなされ"
+    );
   });
 });
