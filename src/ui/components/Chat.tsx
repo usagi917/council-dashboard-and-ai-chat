@@ -14,6 +14,23 @@ export function Chat() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // ボタンのリップルエフェクトを生成する関数（スタイルは globals.css の .ripple で定義）
+  const handleRipple = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = e.currentTarget;
+    const circle = document.createElement("span");
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - button.getBoundingClientRect().left - radius}px`;
+    circle.style.top = `${e.clientY - button.getBoundingClientRect().top - radius}px`;
+    circle.className = "ripple";
+    const ripple = button.getElementsByClassName("ripple")[0];
+    if (ripple) {
+      ripple.remove();
+    }
+    button.appendChild(circle);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -94,11 +111,13 @@ export function Chat() {
   };
 
   return (
-    <div className="backdrop-blur-apple bg-white/70 border border-white/20 rounded-apple-lg shadow-apple-card animate-scale-in">
-      {/* Header */}
-      <div className="flex items-center justify-between p-8 pb-6 border-b border-white/20">
+    // カードレイアウト: ニュートラル背景と角丸で囲みを表現
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 animate-fade-in">
+      {/* Header: ブランドカラーを使用した主要ヘッダー */}
+      <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-apple-purple to-apple-pink rounded-apple-sm mr-4 flex items-center justify-center">
+          {/* アイコン背景にブランドカラーを適用 */}
+          <div className="w-8 h-8 bg-blue-600 rounded-md mr-4 flex items-center justify-center">
             <svg
               className="w-4 h-4 text-white"
               fill="none"
@@ -114,12 +133,14 @@ export function Chat() {
               />
             </svg>
           </div>
-          <h2 className="text-headline text-apple-gray-900">AIアシスタント</h2>
+          {/* 見出しは32px相当のサイズで視認性を向上 */}
+          <h2 className="text-3xl font-bold text-gray-900">AIアシスタント</h2>
         </div>
 
-        <div className="hidden sm:flex items-center space-x-2 text-caption text-apple-gray-500">
+        {/* ステータス表示は補助色で控えめに */}
+        <div className="hidden sm:flex items-center space-x-2 text-xs text-gray-500">
           <div
-            className={`w-2 h-2 rounded-full ${isLoading ? "bg-apple-orange animate-pulse" : "bg-apple-green"}`}
+            className={`w-2 h-2 rounded-full ${isLoading ? "bg-yellow-500 animate-pulse" : "bg-green-600"}`}
           ></div>
           <span>{isLoading ? "AI回答中..." : "待機中"}</span>
         </div>
@@ -129,9 +150,9 @@ export function Chat() {
       <div className="h-96 overflow-y-auto p-6 space-y-4 scroll-smooth">
         {messages.length === 0 && (
           <div className="text-center py-12 animate-fade-in">
-            <div className="w-16 h-16 bg-apple-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-apple-blue"
+                className="w-8 h-8 text-blue-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -145,10 +166,10 @@ export function Chat() {
                 />
               </svg>
             </div>
-            <p className="text-callout text-apple-gray-600 mb-2">
+            <p className="text-base text-gray-600 mb-2">
               池元勝市議の政治活動について質問してください
             </p>
-            <p className="text-footnote text-apple-gray-500">
+            <p className="text-xs text-gray-500">
               議会発言や実績について詳しく回答いたします
             </p>
           </div>
@@ -162,22 +183,21 @@ export function Chat() {
             }`}
             style={{ animationDelay: `${index * 0.1}s` }}
           >
+            {/* メッセージカード: 角丸+影で階層を表現 */}
             <div
-              className={`max-w-xs lg:max-w-md rounded-apple-lg shadow-apple-elevated ${
+              className={`max-w-xs lg:max-w-md rounded-xl shadow-sm ${
                 message.role === "user"
-                  ? "bg-gradient-to-r from-apple-blue to-apple-indigo text-white ml-4"
-                  : "bg-white/90 backdrop-blur-sm text-apple-gray-900 mr-4 border border-white/30"
+                  ? "bg-blue-600 text-white ml-4"
+                  : "bg-gray-100 text-gray-900 mr-4"
               }`}
             >
               <div className="px-5 py-4">
-                <p className="text-callout leading-relaxed whitespace-pre-wrap">
+                <p className="text-base leading-relaxed whitespace-pre-wrap">
                   {message.content}
                 </p>
                 <p
-                  className={`text-caption mt-3 ${
-                    message.role === "user"
-                      ? "text-white/70"
-                      : "text-apple-gray-500"
+                  className={`text-xs mt-3 ${
+                    message.role === "user" ? "text-blue-100" : "text-gray-500"
                   }`}
                 >
                   {message.timestamp.toLocaleTimeString("ja-JP", {
@@ -192,21 +212,22 @@ export function Chat() {
 
         {isLoading && (
           <div className="flex justify-start animate-fade-in">
-            <div className="bg-white/90 backdrop-blur-sm border border-white/30 max-w-xs lg:max-w-md rounded-apple-lg shadow-apple-elevated mr-4">
+            {/* ローディング表示もカードスタイルで統一 */}
+            <div className="bg-gray-100 max-w-xs lg:max-w-md rounded-xl shadow-sm mr-4">
               <div className="px-5 py-4">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-apple-blue rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
                     <div
-                      className="w-2 h-2 bg-apple-indigo rounded-full animate-bounce"
+                      className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
                       style={{ animationDelay: "0.1s" }}
                     ></div>
                     <div
-                      className="w-2 h-2 bg-apple-purple rounded-full animate-bounce"
+                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     ></div>
                   </div>
-                  <span className="text-callout text-apple-gray-600">
+                  <span className="text-base text-gray-600">
                     回答を生成中...
                   </span>
                 </div>
@@ -217,19 +238,20 @@ export function Chat() {
       </div>
 
       {/* Input Area */}
-      <div className="p-6 pt-4 border-t border-white/20">
+      <div className="p-6 pt-4 border-t border-gray-200">
         <form onSubmit={handleSubmit} className="flex gap-3">
           <div className="flex-1 relative">
+            {/* 入力欄: 角丸と太めのボーダーで統一 */}
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="質問を入力してください..."
-              className="w-full px-5 py-4 pr-12 bg-white/80 backdrop-blur-sm border border-white/30 rounded-apple-lg 
-                       text-callout text-apple-gray-900 placeholder-apple-gray-500
-                       focus:outline-none focus:ring-2 focus:ring-apple-blue/50 focus:border-apple-blue/50 focus:bg-white/90
-                       disabled:bg-apple-gray-100 disabled:text-apple-gray-400 disabled:cursor-not-allowed
-                       transition-all duration-200"
+              className="w-full px-4 py-3 pr-12 bg-gray-50 border-2 border-gray-300 rounded-md
+                       text-base text-gray-900 placeholder-gray-400
+                       focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600
+                       disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed
+                       transition"
               disabled={isLoading}
               autoComplete="off"
             />
@@ -237,7 +259,8 @@ export function Chat() {
               <button
                 type="button"
                 onClick={() => setInput("")}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-apple-gray-400 hover:text-apple-gray-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="入力内容をクリア"
               >
                 <svg
                   className="w-5 h-5"
@@ -257,15 +280,15 @@ export function Chat() {
             )}
           </div>
 
+          {/* 送信ボタン: ブランドカラー+リップルエフェクト */}
           <button
             type="submit"
+            onClick={handleRipple}
             disabled={!input.trim() || isLoading}
-            className="px-6 py-4 bg-gradient-to-r from-apple-blue to-apple-indigo text-white rounded-apple-lg 
-                     font-semibold text-callout shadow-apple-elevated
-                     hover:from-apple-indigo hover:to-apple-purple hover:shadow-apple-lg
-                     disabled:from-apple-gray-300 disabled:to-apple-gray-400 disabled:cursor-not-allowed disabled:shadow-none
-                     active:scale-95 transition-all duration-200
-                     flex items-center space-x-2"
+            className="relative overflow-hidden px-6 h-12 bg-blue-600 text-white rounded-xl
+                     font-medium text-base shadow-sm
+                     hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed
+                     flex items-center space-x-2 focus:outline-none"
           >
             {isLoading ? (
               <>
@@ -295,9 +318,8 @@ export function Chat() {
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-footnote text-apple-gray-500">
-            AIが議会発言データに基づいて回答します •
-            正確性を保証するものではありません
+          <p className="text-xs text-gray-500">
+            AIが議会発言データに基づいて回答します • 正確性を保証するものではありません
           </p>
         </div>
       </div>
