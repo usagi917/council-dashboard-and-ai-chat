@@ -2,6 +2,7 @@
 
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import Link from "next/link";
 import type { Highlight } from "../../domain/types";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -208,9 +209,32 @@ export default function HighlightPie({ highlights }: HighlightPieProps) {
       </div>
 
       <div className="mt-6 pt-4 border-t border-white/20">
-        <p className="text-footnote text-apple-gray-500 text-center">
-          議会発言をAIで分析・分類しています
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-footnote text-apple-gray-500">
+            議会発言をAIで分析・分類しています
+          </p>
+          <Link
+            href="/graph"
+            className="inline-flex items-center gap-1 px-3 py-1 text-footnote font-medium text-apple-blue hover:text-apple-blue/80 transition-colors"
+          >
+            詳細を見る
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              role="img"
+              aria-label="右矢印"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );
