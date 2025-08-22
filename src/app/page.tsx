@@ -1,14 +1,38 @@
 import { getRepos } from "../container";
 import HighlightPie from "../ui/components/HighlightPie";
 import { Chat } from "../ui/components/Chat";
+import { InstagramFeed } from "../ui/components/InstagramFeed";
+import type { SnsPost } from "@/domain/types";
 
 async function getHighlights() {
   const { highlights } = getRepos();
   return highlights.list();
 }
 
+async function getInstagramPosts(): Promise<SnsPost[] | null> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/instagram/latest`,
+      {
+        cache: "no-store", // Always fetch fresh data for initial load
+      }
+    );
+
+    if (!response.ok) {
+      console.warn("Instagram API failed:", response.status);
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Instagram fetch error:", error);
+    return null;
+  }
+}
+
 export default async function Home() {
   const highlights = await getHighlights();
+  const instagramPosts = await getInstagramPosts();
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-system-background via-system-background-secondary to-apple-gray-100 font-apple">
@@ -79,31 +103,7 @@ export default async function Home() {
                   <h3 className="text-headline text-apple-gray-900">SNS投稿</h3>
                 </div>
 
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-apple-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg
-                      className="w-8 h-8 text-apple-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      role="img"
-                      aria-label="時計"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-callout text-apple-gray-500 mb-2">
-                    準備中...
-                  </p>
-                  <p className="text-footnote text-apple-gray-400">
-                    Instagram連携機能を実装中です
-                  </p>
-                </div>
+                <InstagramFeed posts={instagramPosts} />
               </div>
             </div>
           </div>
