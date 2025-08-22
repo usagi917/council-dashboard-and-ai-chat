@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { SpeechesRepo, HighlightsRepo, SnsRepo } from "../repositories";
+import type { SpeechesRepo, HighlightsRepo, SnsRepo, EmbeddingsRepo } from "../repositories";
 import type {
   Speech,
   SpeechChunk,
@@ -16,18 +16,24 @@ describe("Repository Interfaces", () => {
         total: 0,
       }),
       getChunksByIds: async (_ids: number[]) => [] as SpeechChunk[],
+      getAllChunks: async () => [] as SpeechChunk[],
     };
 
     expect(typeof mockSpeechesRepo.list).toBe("function");
     expect(typeof mockSpeechesRepo.getChunksByIds).toBe("function");
+    expect(typeof mockSpeechesRepo.getAllChunks).toBe("function");
   });
 
   it("should define HighlightsRepo interface with correct methods", () => {
     const mockHighlightsRepo: HighlightsRepo = {
       list: async () => [] as Highlight[],
+      upsert: async (_highlight: Highlight) => {},
+      clear: async () => {},
     };
 
     expect(typeof mockHighlightsRepo.list).toBe("function");
+    expect(typeof mockHighlightsRepo.upsert).toBe("function");
+    expect(typeof mockHighlightsRepo.clear).toBe("function");
   });
 
   it("should define SnsRepo interface with correct methods", () => {
@@ -38,6 +44,14 @@ describe("Repository Interfaces", () => {
     expect(typeof mockSnsRepo.latest).toBe("function");
   });
 
+  it("should define EmbeddingsRepo interface with correct methods", () => {
+    const mockEmbeddingsRepo: EmbeddingsRepo = {
+      getAllEmbeddings: async () => [],
+    };
+
+    expect(typeof mockEmbeddingsRepo.getAllEmbeddings).toBe("function");
+  });
+
   it("should validate list method returns paginated result", async () => {
     const mockSpeechesRepo: SpeechesRepo = {
       list: async (_page: number, _size: number) => ({
@@ -45,6 +59,7 @@ describe("Repository Interfaces", () => {
         total: 0,
       }),
       getChunksByIds: async (_ids: number[]) => [],
+      getAllChunks: async () => [],
     };
 
     const result = await mockSpeechesRepo.list(1, 10);

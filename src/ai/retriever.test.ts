@@ -19,6 +19,7 @@ describe("retrieve", () => {
     mockSpeechesRepo = {
       list: vi.fn(),
       getChunksByIds: vi.fn(),
+      getAllChunks: vi.fn(),
     };
 
     mockEmbeddingClient = {

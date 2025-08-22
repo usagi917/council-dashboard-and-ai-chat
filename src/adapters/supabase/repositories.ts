@@ -4,7 +4,9 @@ import type {
   SpeechesRepo,
   HighlightsRepo,
   SnsRepo,
+  EmbeddingsRepo,
   PaginatedResult,
+  EmbeddingRecord,
 } from "../../ports/repositories";
 import type {
   Speech,
@@ -113,6 +115,19 @@ export class SupabaseSpeechesRepo implements SpeechesRepo {
 
     return (data || []).map(chunkRowToSpeechChunk);
   }
+
+  async getAllChunks(): Promise<SpeechChunk[]> {
+    const { data, error } = await this.client
+      .from("speech_chunks")
+      .select("*")
+      .order("id", { ascending: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data || []).map(chunkRowToSpeechChunk);
+  }
 }
 
 export class SupabaseHighlightsRepo implements HighlightsRepo {
@@ -129,6 +144,29 @@ export class SupabaseHighlightsRepo implements HighlightsRepo {
     }
 
     return (data || []).map(highlightRowToHighlight);
+  }
+
+  async upsert(highlight: Highlight): Promise<void> {
+    const { error } = await this.client.from("highlights").upsert({
+      cluster_label: highlight.clusterLabel,
+      count: highlight.count,
+      sample_chunk_id: highlight.sampleChunkId,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async clear(): Promise<void> {
+    const { error } = await this.client
+      .from("highlights")
+      .delete()
+      .neq("cluster_label", ""); // Delete all rows
+
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 }
 
@@ -147,5 +185,25 @@ export class SupabaseSnsRepo implements SnsRepo {
     }
 
     return (data || []).map(snsPostRowToSnsPost);
+  }
+}
+
+export class SupabaseEmbeddingsRepo implements EmbeddingsRepo {
+  constructor(private client: SupabaseClient<Database>) {}
+
+  async getAllEmbeddings(): Promise<EmbeddingRecord[]> {
+    const { data, error } = await this.client
+      .from("speech_embeddings")
+      .select("chunk_id, embedding")
+      .order("chunk_id", { ascending: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data || []).map((row) => ({
+      chunkId: row.chunk_id,
+      embedding: row.embedding as number[],
+    }));
   }
 }

@@ -8,6 +8,7 @@ import { EmbeddingProcessor, EmbeddingProgress } from "./embed_all";
 const createMockSpeechesRepo = (): SpeechesRepo => ({
   list: vi.fn(),
   getChunksByIds: vi.fn(),
+  getAllChunks: vi.fn(),
 });
 
 const createMockVectorSearch = (): VectorSearch => ({

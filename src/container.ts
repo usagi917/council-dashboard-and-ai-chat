@@ -2,16 +2,19 @@ import type {
   SpeechesRepo,
   HighlightsRepo,
   SnsRepo,
+  EmbeddingsRepo,
 } from "./ports/repositories";
 import {
   InMemorySpeechesRepo,
   InMemoryHighlightsRepo,
   InMemorySnsRepo,
+  InMemoryEmbeddingsRepo,
 } from "./adapters/inmemory/repositories";
 import {
   SupabaseSpeechesRepo,
   SupabaseHighlightsRepo,
   SupabaseSnsRepo,
+  SupabaseEmbeddingsRepo,
 } from "./adapters/supabase/repositories";
 import type { VectorSearch } from "./ports/vector";
 import { InMemoryVectorSearch } from "./adapters/inmemory/vector";
@@ -24,6 +27,7 @@ export interface Container {
   speeches: SpeechesRepo;
   highlights: HighlightsRepo;
   sns: SnsRepo;
+  embeddings: EmbeddingsRepo;
 }
 
 let container: Container | null = null;
@@ -53,6 +57,7 @@ export function getRepos(): Container {
         speeches: new SupabaseSpeechesRepo(client),
         highlights: new SupabaseHighlightsRepo(client),
         sns: new SupabaseSnsRepo(client),
+        embeddings: new SupabaseEmbeddingsRepo(client),
       };
     } else {
       // InMemory implementation (default)
@@ -60,6 +65,7 @@ export function getRepos(): Container {
         speeches: new InMemorySpeechesRepo(),
         highlights: new InMemoryHighlightsRepo(),
         sns: new InMemorySnsRepo(),
+        embeddings: new InMemoryEmbeddingsRepo(),
       };
     }
   }
@@ -73,6 +79,7 @@ export function getRepositories() {
     speechesRepo: repos.speeches,
     highlightsRepo: repos.highlights,
     snsRepo: repos.sns,
+    embeddingsRepo: repos.embeddings,
   };
 }
 
