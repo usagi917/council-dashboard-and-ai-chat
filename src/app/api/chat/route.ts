@@ -8,21 +8,35 @@ import {
 import { retrieve } from "../../../ai/retriever";
 import { buildPrompt } from "../../../ai/prompt";
 import { getMessage } from "../../../i18n/ja";
+import { logger } from "../../../utils/logger";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(request: NextRequest) {
+  const requestInfo = {
+    method: "POST",
+    url: request.url,
+    userAgent: request.headers.get("user-agent") || undefined,
+  };
+
   try {
+    logger.info("Chat request received", { url: request.url });
+
     let body: any;
     try {
       body = await request.json();
-    } catch {
+    } catch (parseError) {
+      logger.warn("Invalid JSON in chat request", {
+        error: parseError,
+        ...requestInfo,
+      });
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
     if (!body.question || typeof body.question !== "string") {
+      logger.warn("Invalid question parameter", { body, ...requestInfo });
       return NextResponse.json(
         { error: "Question is required and must be a string" },
         { status: 400 }
@@ -30,6 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { question } = body;
+    logger.debug("Processing chat question", { question, ...requestInfo });
     const { speechesRepo } = getRepositories();
     const vectorSearch = getVectorSearch();
     const embeddingClient = getEmbeddingClient();
@@ -49,6 +64,10 @@ export async function POST(request: NextRequest) {
 
     // If no chunks found, return immediate response with i18n message
     if (chunks.length === 0) {
+      logger.info("No relevant chunks found for question", {
+        question,
+        ...requestInfo,
+      });
       const noInfoMessage = getMessage("errors.noInformation");
       return new NextResponse(noInfoMessage, {
         headers: {
@@ -56,6 +75,12 @@ export async function POST(request: NextRequest) {
         },
       });
     }
+
+    logger.info("Retrieved chunks for RAG", {
+      chunkCount: chunks.length,
+      question: question.substring(0, 100) + "...",
+      ...requestInfo,
+    });
 
     // Strict mode: Enhanced prompt with explicit source URL requirements
     const expectedUrls = chunks.map((chunk) => chunk.sourceUrl);
@@ -88,8 +113,9 @@ URLが含まれていない回答は「情報がありません。」に置き�
             }
           }
           controller.close();
-        } catch (error) {
-          controller.error(error);
+        } catch (streamError) {
+          logger.error("Streaming error", streamError);
+          controller.error(streamError);
         }
       },
     });
@@ -101,7 +127,7 @@ URLが含まれていない回答は「情報がありません。」に置き�
       },
     });
   } catch (error) {
-    console.error("Chat API error:", error);
+    logger.apiError("Chat API error", error as Error, requestInfo);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

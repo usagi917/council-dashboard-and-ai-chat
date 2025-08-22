@@ -12,7 +12,7 @@ async function getHighlights() {
 async function getInstagramPosts(): Promise<SnsPost[] | null> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/instagram/latest`,
+      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/api/instagram/latest`,
       {
         cache: "no-store", // Always fetch fresh data for initial load
       }

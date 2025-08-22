@@ -319,7 +319,8 @@ export function Chat() {
 
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-500">
-            AIが議会発言データに基づいて回答します • 正確性を保証するものではありません
+            AIが議会発言データに基づいて回答します •
+            正確性を保証するものではありません
           </p>
         </div>
       </div>
