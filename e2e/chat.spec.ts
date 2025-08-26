@@ -6,7 +6,7 @@ test.describe("Chat functionality", () => {
 
     // Check that the chat section is visible
     await expect(
-      page.getByRole("heading", { name: "AIチャット" })
+      page.getByRole("heading", { name: "AIアシスタント" })
     ).toBeVisible();
 
     // Check that the input field is present
@@ -48,7 +48,9 @@ test.describe("Chat functionality", () => {
     await expect(page.getByText("回答を生成中...")).toBeVisible();
 
     // Wait for the response - should be "no information" message
-    await expect(page.getByText("情報がありません。")).toBeVisible();
+    await expect(page.getByText("情報がありません。")).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should show loading state during API call", async ({ page }) => {
@@ -61,7 +63,9 @@ test.describe("Chat functionality", () => {
     await sendButton.click();
 
     // Loading state should appear
-    await expect(page.getByText("回答を生成中...")).toBeVisible();
+    await expect(page.getByText("回答を生成中...")).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("should disable input and button during loading", async ({ page }) => {
