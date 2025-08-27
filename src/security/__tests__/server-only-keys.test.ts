@@ -60,4 +60,29 @@ describe("Server-only API Keys Security", () => {
       process.env.NEXT_PUBLIC_OPENAI_API_KEY = originalEnv;
     }
   });
+
+  it("should allow NEXT_PUBLIC_SUPABASE_ANON_KEY (client-exposed by design)", async () => {
+    // Mock environment with Supabase anon key (which is meant to be client-exposed)
+    const originalEnv = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYwMzI2MjQwMCwiZXhwIjoxOTAzMjYyNDAwfQ.example";
+
+    const { validateServerOnlyKeys } = await import(
+      "../server-only-validation"
+    );
+    const result = validateServerOnlyKeys();
+
+    // Should be valid because anon key is supposed to be client-exposed
+    expect(result.isValid).toBe(true);
+    expect(result.violations).not.toContain(
+      expect.stringContaining("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+    );
+
+    // Restore
+    if (originalEnv === undefined) {
+      delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    } else {
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = originalEnv;
+    }
+  });
 });

@@ -41,7 +41,12 @@ export function validateServerOnlyKeys(): ValidationResult {
         }
 
         // Check for Supabase service role key patterns (JWT starting with eyJ)
-        if (value.startsWith("eyJ") && value.length > 100) {
+        // But exclude NEXT_PUBLIC_SUPABASE_ANON_KEY which is meant to be client-exposed
+        if (
+          value.startsWith("eyJ") &&
+          value.length > 100 &&
+          envKey !== "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+        ) {
           violations.push(
             `Potential service role key detected in client-exposed variable: ${envKey}`
           );
