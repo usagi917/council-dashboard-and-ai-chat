@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkServerOnlyKeysAtRuntime } from "./security/server-only-validation";
 
 export function middleware(request: NextRequest) {
+  // Perform security validation on first request
+  checkServerOnlyKeysAtRuntime();
+
   const response = NextResponse.next();
 
   // Add security headers to all responses

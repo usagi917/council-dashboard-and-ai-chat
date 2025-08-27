@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/ui/components/ErrorBoundary";
+import { checkServerOnlyKeysAtRuntime } from "@/security/server-only-validation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,6 +16,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Validate server-only keys during server-side rendering
+  checkServerOnlyKeysAtRuntime();
+
   return (
     <html lang="ja">
       <body className={inter.className}>
