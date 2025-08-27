@@ -112,7 +112,7 @@ export function Chat() {
 
   return (
     // カードレイアウト: ニュートラル背景と角丸で囲みを表現
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 animate-fade-in">
+    <div className="bg-background-primary rounded-xl shadow-sm border border-secondary-200 animate-fade-in">
       {/* Header: ブランドカラーを使用した主要ヘッダー */}
       <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200">
         <div className="flex items-center">

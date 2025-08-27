@@ -22,9 +22,11 @@ export function LoadingSpinner({
       aria-live="polite"
     >
       <div
-        className={`${sizeClasses[size]} border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin`}
+        className={`${sizeClasses[size]} border-2 border-primary-600/30 border-t-primary-600 rounded-full animate-spin`}
       />
-      {message && <span className="ml-3 text-sm text-gray-600">{message}</span>}
+      {message && (
+        <span className="ml-3 text-sm text-secondary-600">{message}</span>
+      )}
       <span className="sr-only">読み込み中...</span>
     </div>
   );
@@ -51,7 +53,7 @@ export function ErrorState({
       role="alert"
       aria-live="assertive"
     >
-      <div className="text-red-500 mb-4">
+      <div className="text-error-600 mb-4">
         <svg
           className="w-12 h-12 mx-auto"
           fill="none"
@@ -68,13 +70,13 @@ export function ErrorState({
         </svg>
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">{message}</p>
+      <h3 className="text-lg font-semibold text-secondary-900 mb-2">{title}</h3>
+      <p className="text-secondary-600 mb-6 max-w-md mx-auto">{message}</p>
 
       {onRetry && (
         <button
           onClick={onRetry}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           aria-describedby="retry-description"
         >
           {retryLabel}
@@ -108,7 +110,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   const defaultIcon = (
     <svg
-      className="w-12 h-12 text-gray-400"
+      className="w-12 h-12 text-secondary-400"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -127,13 +129,13 @@ export function EmptyState({
     <div className={`text-center py-12 ${className}`}>
       <div className="mb-4">{icon || defaultIcon}</div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">{description}</p>
+      <h3 className="text-lg font-semibold text-secondary-900 mb-2">{title}</h3>
+      <p className="text-secondary-600 mb-6 max-w-md mx-auto">{description}</p>
 
       {action && (
         <button
           onClick={action.onClick}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
         >
           {action.label}
         </button>
