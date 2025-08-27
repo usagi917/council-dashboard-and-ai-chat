@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsx
 
 import type { SpeechChunk, Highlight } from "../src/domain/types";
 import type {
@@ -7,7 +7,7 @@ import type {
   EmbeddingsRepo,
 } from "../src/ports/repositories";
 import { kmeans, generateClusterLabel } from "../src/ai/cluster";
-import { getRepos } from "../src/container";
+import { getRepositories } from "../src/container";
 
 export interface ClusterOptions {
   k?: number;
@@ -112,25 +112,66 @@ export async function updateHighlights(
 
 // CLI execution
 async function main() {
-  const args = process.argv.slice(2);
-  const k = args.includes("--k") ? parseInt(args[args.indexOf("--k") + 1]) : 6;
-  const seed = args.includes("--seed")
-    ? parseInt(args[args.indexOf("--seed") + 1])
-    : 42;
-
   try {
-    const repos = getRepos();
-    await updateHighlights(repos.speeches, repos.highlights, repos.embeddings, {
+    console.log("=== クラスタリングスクリプト開始 ===");
+
+    // 環境変数チェック（Supabaseを使う場合）
+    if (process.env.USE_SUPABASE === "true") {
+      const requiredEnvVars = [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY",
+      ];
+
+      const missingEnvVars = requiredEnvVars.filter(
+        (varName) => !process.env[varName]
+      );
+
+      if (missingEnvVars.length > 0) {
+        console.error("❌ 必要な環境変数が設定されていません:");
+        missingEnvVars.forEach((varName) => {
+          console.error(`  - ${varName}`);
+        });
+        console.error("");
+        console.error("💡 .env.localファイルを確認してください");
+        process.exit(1);
+      }
+    }
+
+    const args = process.argv.slice(2);
+    const k = args.includes("--k")
+      ? parseInt(args[args.indexOf("--k") + 1])
+      : 6;
+    const seed = args.includes("--seed")
+      ? parseInt(args[args.indexOf("--seed") + 1])
+      : 42;
+
+    console.log(`📊 クラスタリング設定: k=${k}, seed=${seed}`);
+
+    const { speechesRepo, highlightsRepo, embeddingsRepo } = getRepositories();
+    await updateHighlights(speechesRepo, highlightsRepo, embeddingsRepo, {
       k,
       seed,
     });
+
+    console.log("");
+    console.log("🎉 クラスタリングが完了しました!");
+    console.log("");
+    console.log("💡 次のステップ:");
+    console.log("   ホームページで更新されたハイライトを確認してください");
   } catch (error) {
-    console.error("Error during clustering:", error);
+    console.error("❌ クラスタリングスクリプトでエラーが発生しました:", error);
+    console.error("");
+    console.error("🔍 トラブルシューティング:");
+    console.error(
+      "  1. 事前に埋め込みデータが生成されているか確認 (pnpm embed)"
+    );
+    console.error("  2. データベース接続が正常か確認");
+    console.error("  3. 環境変数が正しく設定されているか確認");
     process.exit(1);
   }
 }
 
-// Run if this script is executed directly
-if (require.main === module) {
+// Run if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
