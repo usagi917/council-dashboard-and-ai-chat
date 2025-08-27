@@ -20,6 +20,10 @@ describe("retrieve", () => {
       list: vi.fn(),
       getChunksByIds: vi.fn(),
       getAllChunks: vi.fn(),
+      insertSpeech: vi.fn().mockResolvedValue(1),
+      insertChunk: vi.fn().mockResolvedValue(undefined),
+      updateSpeech: vi.fn().mockResolvedValue(undefined),
+      deleteSpeech: vi.fn().mockResolvedValue(undefined),
     };
 
     mockEmbeddingClient = {

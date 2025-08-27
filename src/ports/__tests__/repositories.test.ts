@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import type {
   SpeechesRepo,
   HighlightsRepo,
@@ -22,6 +22,10 @@ describe("Repository Interfaces", () => {
       }),
       getChunksByIds: async (_ids: number[]) => [] as SpeechChunk[],
       getAllChunks: async () => [] as SpeechChunk[],
+      insertSpeech: vi.fn().mockResolvedValue(1),
+      insertChunk: vi.fn().mockResolvedValue(undefined),
+      updateSpeech: vi.fn().mockResolvedValue(undefined),
+      deleteSpeech: vi.fn().mockResolvedValue(undefined),
     };
 
     expect(typeof mockSpeechesRepo.list).toBe("function");
@@ -65,6 +69,10 @@ describe("Repository Interfaces", () => {
       }),
       getChunksByIds: async (_ids: number[]) => [],
       getAllChunks: async () => [],
+      insertSpeech: vi.fn().mockResolvedValue(1),
+      insertChunk: vi.fn().mockResolvedValue(undefined),
+      updateSpeech: vi.fn().mockResolvedValue(undefined),
+      deleteSpeech: vi.fn().mockResolvedValue(undefined),
     };
 
     const result = await mockSpeechesRepo.list(1, 10);

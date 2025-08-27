@@ -74,6 +74,10 @@ describe("GraphPage", () => {
         list: vi.fn(),
         getChunksByIds: vi.fn().mockResolvedValue(mockSpeechChunks),
         getAllChunks: vi.fn(),
+        insertSpeech: vi.fn().mockResolvedValue(1),
+        insertChunk: vi.fn().mockResolvedValue(undefined),
+        updateSpeech: vi.fn().mockResolvedValue(undefined),
+        deleteSpeech: vi.fn().mockResolvedValue(undefined),
       },
       snsRepo: {
         latest: vi.fn(),
@@ -102,6 +106,10 @@ describe("GraphPage", () => {
         list: vi.fn(),
         getChunksByIds: vi.fn().mockResolvedValue([]),
         getAllChunks: vi.fn(),
+        insertSpeech: vi.fn().mockResolvedValue(1),
+        insertChunk: vi.fn().mockResolvedValue(undefined),
+        updateSpeech: vi.fn().mockResolvedValue(undefined),
+        deleteSpeech: vi.fn().mockResolvedValue(undefined),
       },
       snsRepo: {
         latest: vi.fn(),
