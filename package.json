@@ -17,7 +17,8 @@
     "ingest:repository": "tsx scripts/ingest-integration.ts",
     "setup-db": "tsx scripts/setup-db.ts",
     "embed": "tsx scripts/embed_all.ts",
-    "cluster": "tsx scripts/cluster.ts"
+    "cluster": "tsx scripts/cluster.ts",
+    "validate-env": "tsx scripts/validate-env.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
