@@ -128,6 +128,75 @@ export class SupabaseSpeechesRepo implements SpeechesRepo {
 
     return (data || []).map(chunkRowToSpeechChunk);
   }
+
+  async insertSpeech(speech: Speech): Promise<number> {
+    const { data, error } = await this.client
+      .from("speeches")
+      .insert({
+        date: speech.date.toISOString().split("T")[0],
+        session: speech.session,
+        speaker: speech.speaker,
+        content: speech.content,
+        source_url: speech.sourceUrl,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data.id;
+  }
+
+  async insertChunk(chunk: SpeechChunk): Promise<void> {
+    const { error } = await this.client.from("speech_chunks").insert({
+      speech_id: chunk.speechId,
+      idx: chunk.idx,
+      text: chunk.text,
+      source_url: chunk.sourceUrl,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async updateSpeech(speech: Speech): Promise<void> {
+    const { error } = await this.client
+      .from("speeches")
+      .update({
+        date: speech.date.toISOString().split("T")[0],
+        session: speech.session,
+        speaker: speech.speaker,
+        content: speech.content,
+        source_url: speech.sourceUrl,
+      })
+      .eq("id", speech.id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async deleteSpeech(id: number): Promise<void> {
+    // First delete associated chunks
+    const { error: chunkError } = await this.client
+      .from("speech_chunks")
+      .delete()
+      .eq("speech_id", id);
+
+    if (chunkError) {
+      throw new Error(chunkError.message);
+    }
+
+    // Then delete the speech
+    const { error } = await this.client.from("speeches").delete().eq("id", id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
 }
 
 export class SupabaseHighlightsRepo implements HighlightsRepo {

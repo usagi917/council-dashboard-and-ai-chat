@@ -9,6 +9,10 @@ export interface SpeechesRepo {
   list(page: number, size: number): Promise<PaginatedResult<Speech>>;
   getChunksByIds(ids: number[]): Promise<SpeechChunk[]>;
   getAllChunks(): Promise<SpeechChunk[]>;
+  insertSpeech(speech: Speech): Promise<number>;
+  insertChunk(chunk: SpeechChunk): Promise<void>;
+  updateSpeech(speech: Speech): Promise<void>;
+  deleteSpeech(id: number): Promise<void>;
 }
 
 export interface HighlightsRepo {

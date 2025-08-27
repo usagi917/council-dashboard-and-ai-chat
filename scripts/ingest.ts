@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { main } from "../src/scripts/ingest";
+import { mainWithRepository } from "./ingest-integration";
 
-// Run the main function
-main();
+// Run the integration function that persists to repositories
+mainWithRepository();

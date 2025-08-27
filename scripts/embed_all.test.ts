@@ -9,6 +9,10 @@ const createMockSpeechesRepo = (): SpeechesRepo => ({
   list: vi.fn(),
   getChunksByIds: vi.fn(),
   getAllChunks: vi.fn(),
+  insertSpeech: vi.fn(),
+  insertChunk: vi.fn(),
+  updateSpeech: vi.fn(),
+  deleteSpeech: vi.fn(),
 });
 
 const createMockVectorSearch = (): VectorSearch => ({
