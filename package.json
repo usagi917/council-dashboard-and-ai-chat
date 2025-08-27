@@ -13,7 +13,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "e2e": "playwright test",
-    "ingest": "tsx scripts/ingest.ts"
+    "ingest": "tsx scripts/ingest.ts",
+    "setup-db": "tsx scripts/setup-db.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
