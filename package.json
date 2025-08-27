@@ -15,7 +15,8 @@
     "e2e": "playwright test",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:repository": "tsx scripts/ingest-integration.ts",
-    "setup-db": "tsx scripts/setup-db.ts"
+    "setup-db": "tsx scripts/setup-db.ts",
+    "embed": "tsx scripts/embed_all.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
