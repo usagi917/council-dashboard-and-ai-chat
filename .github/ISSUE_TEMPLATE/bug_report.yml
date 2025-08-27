@@ -1,0 +1,90 @@
+name: バグ報告 (Bug Report)
+description: バグや問題の報告
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグの報告をありがとうございます。問題の詳細を記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: バグの説明
+      description: 発生した問題について詳しく説明してください
+      placeholder: 次の操作を行うと...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順
+      placeholder: |
+        1. ...を開く
+        2. ...をクリック
+        3. ...を入力
+        4. エラーが発生
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+      description: 正常に動作した場合、どのような結果が期待されますか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 実際に何が起こりましたか？
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 深刻度
+      description: このバグの深刻度は？
+      options:
+        - Critical (システム停止)
+        - High (主要機能に影響)
+        - Medium (一部機能に影響)
+        - Low (軽微な問題)
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境情報
+      description: OS、ブラウザ、Node.jsバージョンなど
+      placeholder: |
+        - OS: macOS 14.0
+        - Browser: Chrome 120.0
+        - Node.js: 20.10.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ・エラーメッセージ
+      description: 関連するログやエラーメッセージがあれば貼り付けてください
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: スクリーンショット、その他の関連情報
+    validations:
+      required: false

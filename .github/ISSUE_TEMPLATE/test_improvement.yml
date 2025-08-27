@@ -1,0 +1,90 @@
+name: テスト改善 (Test Improvement)
+description: テストの追加・改善・修正
+title: "[TEST] "
+labels: ["test", "quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        テストの改善提案をありがとうございます。詳細を記入してください。
+
+  - type: dropdown
+    id: test-type
+    attributes:
+      label: テストの種類
+      description: どの種類のテストですか？
+      options:
+        - Unit Test (単体テスト)
+        - Integration Test (統合テスト)
+        - E2E Test (End-to-End テスト)
+        - Performance Test (パフォーマンステスト)
+        - Security Test (セキュリティテスト)
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: target
+    attributes:
+      label: 対象コンポーネント・機能
+      description: テストの対象となるコンポーネントや機能
+      placeholder: /src/components/Chat.tsx の...機能
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-situation
+    attributes:
+      label: 現状
+      description: 現在のテストの状況（不足している部分、問題点など）
+      placeholder: 現在はハッピーパスのみテストされており...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvement-plan
+    attributes:
+      label: 改善案
+      description: どのような改善を行いたいか
+      placeholder: |
+        - [ ] エラーケースのテスト追加
+        - [ ] エッジケースのテスト追加
+        - [ ] モックの改善
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-cases
+    attributes:
+      label: テストケース
+      description: 追加・修正したいテストケースの詳細
+      placeholder: |
+        describe('新しいテストケース', () => {
+          it('should ...', () => {
+            // テスト内容
+          });
+        });
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この改善の優先度は？
+      options:
+        - Critical (緊急)
+        - High (高)
+        - Medium (中)
+        - Low (低)
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: カバレッジ情報、参考資料など
+    validations:
+      required: false

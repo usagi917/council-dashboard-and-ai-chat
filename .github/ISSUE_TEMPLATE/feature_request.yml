@@ -1,0 +1,61 @@
+name: 機能要求 (Feature Request)
+description: 新しい機能やエンハンスメントの提案
+title: "[FEATURE] "
+labels: ["enhancement", "feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新しい機能の提案をありがとうございます。詳細を記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 機能の説明
+      description: 提案する機能について詳しく説明してください
+      placeholder: この機能は...
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 動機・必要性
+      description: なぜこの機能が必要ですか？どのような問題を解決しますか？
+      placeholder: この機能があることで...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 受入基準
+      description: この機能が完成したと判断する基準
+      placeholder: |
+        - [ ] 条件1
+        - [ ] 条件2
+        - [ ] 条件3
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この機能の優先度は？
+      options:
+        - Critical (緊急)
+        - High (高)
+        - Medium (中)
+        - Low (低)
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: スクリーンショット、モックアップ、参考資料など
+    validations:
+      required: false

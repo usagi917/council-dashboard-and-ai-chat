@@ -1,0 +1,87 @@
+name: ドキュメント改善 (Documentation)
+description: ドキュメントの追加・改善・修正
+title: "[DOC] "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ドキュメント改善の提案をありがとうございます。詳細を記入してください。
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: ドキュメントの種類
+      description: どの種類のドキュメントですか？
+      options:
+        - README
+        - API Documentation
+        - User Guide
+        - Developer Guide
+        - Architecture Documentation
+        - Runbook
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-file
+    attributes:
+      label: 対象ファイル
+      description: 修正・追加したいドキュメントファイル
+      placeholder: README.md, docs/api.md など
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-situation
+    attributes:
+      label: 現状の問題
+      description: 現在のドキュメントの問題点や不足している部分
+      placeholder: セットアップ手順が不明確で...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvement-plan
+    attributes:
+      label: 改善案
+      description: どのような改善を行いたいか
+      placeholder: |
+        - [ ] セットアップ手順の詳細化
+        - [ ] 環境変数の説明追加
+        - [ ] トラブルシューティング追加
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-audience
+    attributes:
+      label: 対象読者
+      description: このドキュメントを読む想定読者
+      placeholder: 新規開発者、運用担当者、エンドユーザーなど
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この改善の優先度は？
+      options:
+        - Critical (緊急)
+        - High (高)
+        - Medium (中)
+        - Low (低)
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 追加情報
+      description: 参考資料、関連するIssueやPRなど
+    validations:
+      required: false
