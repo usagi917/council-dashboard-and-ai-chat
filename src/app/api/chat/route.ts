@@ -3,7 +3,6 @@ import OpenAI from "openai";
 import {
   getRepositories,
   getVectorSearch,
-  getEmbeddingClient,
 } from "../../../container";
 import { retrieve } from "../../../ai/retriever";
 import { buildPrompt } from "../../../ai/prompt";
@@ -47,16 +46,9 @@ export async function POST(request: NextRequest) {
     logger.debug("Processing chat question", { question, ...requestInfo });
     const { speechesRepo } = getRepositories();
     const vectorSearch = getVectorSearch();
-    const embeddingClient = getEmbeddingClient();
 
     // Retrieve relevant chunks
-    const retrievedChunks = await retrieve(
-      question,
-      5,
-      vectorSearch,
-      speechesRepo,
-      embeddingClient
-    );
+    const retrievedChunks = await retrieve(question, 5, vectorSearch, speechesRepo);
     const chunks = retrievedChunks.map((r) => r.chunk);
 
     // Build prompt

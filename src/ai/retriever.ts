@@ -1,7 +1,7 @@
 import { SpeechChunk } from "../domain/types";
 import { SpeechesRepo } from "../ports/repositories";
 import { VectorSearch } from "../ports/vector";
-import { EmbeddingClient } from "./embeddings";
+// Note: Embedding calculation is delegated to the VectorSearch implementation.
 
 export interface RetrievedChunk {
   chunk: SpeechChunk;
@@ -11,12 +11,8 @@ export async function retrieve(
   question: string,
   k: number,
   vectorSearch: VectorSearch,
-  speechesRepo: SpeechesRepo,
-  embeddingClient: EmbeddingClient
+  speechesRepo: SpeechesRepo
 ): Promise<RetrievedChunk[]> {
-  // Generate embedding for the question
-  await embeddingClient.embed(question);
-
   // Find similar chunks
   const similarChunks = await vectorSearch.querySimilar(question, k);
 
