@@ -111,6 +111,54 @@ describe("/api/chat POST", () => {
     expect(response.status).toBe(400);
   });
 
+  it("should use default topK=5 when VECTOR_TOP_K is not set", async () => {
+    // Ensure env var is not set
+    const prev = process.env.VECTOR_TOP_K;
+    delete process.env.VECTOR_TOP_K;
+
+    try {
+      vi.mocked(mockVectorSearch.querySimilar).mockResolvedValue([]);
+
+      const request = new NextRequest("http://localhost:3000/api/chat", {
+        method: "POST",
+        body: JSON.stringify({ question: "教育について教えて" }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      await POST(request);
+
+      expect(mockVectorSearch.querySimilar).toHaveBeenCalledTimes(1);
+      const [, k] = vi.mocked(mockVectorSearch.querySimilar).mock.calls[0];
+      expect(k).toBe(5);
+    } finally {
+      if (prev !== undefined) process.env.VECTOR_TOP_K = prev;
+    }
+  });
+
+  it("should use VECTOR_TOP_K when set to a valid number", async () => {
+    const prev = process.env.VECTOR_TOP_K;
+    process.env.VECTOR_TOP_K = "7";
+
+    try {
+      vi.mocked(mockVectorSearch.querySimilar).mockResolvedValue([]);
+
+      const request = new NextRequest("http://localhost:3000/api/chat", {
+        method: "POST",
+        body: JSON.stringify({ question: "防災について" }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      await POST(request);
+
+      expect(mockVectorSearch.querySimilar).toHaveBeenCalledTimes(1);
+      const [, k] = vi.mocked(mockVectorSearch.querySimilar).mock.calls[0];
+      expect(k).toBe(7);
+    } finally {
+      if (prev !== undefined) process.env.VECTOR_TOP_K = prev;
+      else delete process.env.VECTOR_TOP_K;
+    }
+  });
+
   // NOTE: Enhanced system prompt functionality is verified through integration tests
   // Strict mode adds citation requirements to prevent response deviation
 });

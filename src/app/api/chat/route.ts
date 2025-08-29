@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import {
-  getRepositories,
-  getVectorSearch,
-} from "../../../container";
+import { getRepositories, getVectorSearch } from "../../../container";
 import { retrieve } from "../../../ai/retriever";
 import { buildPrompt } from "../../../ai/prompt";
 import { getMessage } from "../../../i18n/ja";
 import { logger } from "../../../utils/logger";
+import { getVectorTopK } from "@/config/search";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -47,8 +45,14 @@ export async function POST(request: NextRequest) {
     const { speechesRepo } = getRepositories();
     const vectorSearch = getVectorSearch();
 
-    // Retrieve relevant chunks
-    const retrievedChunks = await retrieve(question, 5, vectorSearch, speechesRepo);
+    // Retrieve relevant chunks with configurable Top-K
+    const topK = getVectorTopK();
+    const retrievedChunks = await retrieve(
+      question,
+      topK,
+      vectorSearch,
+      speechesRepo
+    );
     const chunks = retrievedChunks.map((r) => r.chunk);
 
     // Build prompt
