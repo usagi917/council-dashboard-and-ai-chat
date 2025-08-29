@@ -2,32 +2,11 @@ import { getRepos } from "../container";
 import HighlightPie from "../ui/components/HighlightPie";
 import { Chat } from "../ui/components/Chat";
 import { InstagramFeed } from "../ui/components/InstagramFeed";
-import type { SnsPost } from "@/domain/types";
+import { getInstagramPosts } from "../lib/instagram";
 
 async function getHighlights() {
   const { highlights } = getRepos();
   return highlights.list();
-}
-
-async function getInstagramPosts(): Promise<SnsPost[] | null> {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001"}/api/instagram/latest`,
-      {
-        cache: "no-store", // Always fetch fresh data for initial load
-      }
-    );
-
-    if (!response.ok) {
-      console.warn("Instagram API failed:", response.status);
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Instagram fetch error:", error);
-    return null;
-  }
 }
 
 export default async function Home() {

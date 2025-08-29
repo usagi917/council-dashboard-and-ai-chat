@@ -1,7 +1,11 @@
 #!/usr/bin/env node
+import dotenv from "dotenv";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { createServerClient } from "../src/adapters/supabase/client";
+
+// Load environment variables from .env.local
+dotenv.config({ path: ".env.local" });
 
 export interface VerificationResult {
   success: boolean;

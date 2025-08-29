@@ -209,6 +209,24 @@ export class SupabaseHighlightsRepo implements HighlightsRepo {
       .order("count", { ascending: false });
 
     if (error) {
+      const msg = error.message || "";
+      const code = (error as any).code as string | undefined;
+
+      // Gracefully handle missing table / schema cache cases
+      // Common patterns:
+      // - PostgREST: "Could not find the table 'public.highlights' in the schema cache"
+      // - Postgres: code 42P01 (undefined_table)
+      if (
+        msg.includes("schema cache") ||
+        msg.includes("Could not find the table") ||
+        (code && code === "42P01")
+      ) {
+        console.warn(
+          "[SupabaseHighlightsRepo] 'highlights' table is missing or not accessible. Returning empty list. Run 'pnpm migrate' then 'pnpm setup-db' to create required tables."
+        );
+        return [];
+      }
+
       throw new Error(error.message);
     }
 
@@ -234,6 +252,18 @@ export class SupabaseHighlightsRepo implements HighlightsRepo {
       .neq("cluster_label", ""); // Delete all rows
 
     if (error) {
+      const msg = error.message || "";
+      const code = (error as any).code as string | undefined;
+      if (
+        msg.includes("schema cache") ||
+        msg.includes("Could not find the table") ||
+        (code && code === "42P01")
+      ) {
+        console.warn(
+          "[SupabaseHighlightsRepo] 'highlights' table is missing during clear(); treating as no-op."
+        );
+        return; // treat clear as no-op if table doesn't exist
+      }
       throw new Error(error.message);
     }
   }

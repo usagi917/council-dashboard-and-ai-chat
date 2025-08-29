@@ -18,7 +18,8 @@
     "setup-db": "tsx scripts/setup-db.ts",
     "embed": "tsx scripts/embed_all.ts",
     "cluster": "tsx scripts/cluster.ts",
-    "validate-env": "tsx scripts/validate-env.ts"
+    "validate-env": "tsx scripts/validate-env.ts",
+    "migrate": "tsx scripts/run-migrations.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
+    "dotenv": "^17.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.7",
     "jsdom": "^25.0.1",
