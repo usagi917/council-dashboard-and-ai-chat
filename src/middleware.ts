@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkServerOnlyKeysAtRuntime } from "./security/server-only-validation";
+import { verifyServerOnlyEnvVarsAtRuntime } from "./security/server-only-validation";
 
 export function middleware(request: NextRequest) {
-  // Perform security validation on first request
-  checkServerOnlyKeysAtRuntime();
+  // 最初のリクエストでセキュリティ検証を実行
+  verifyServerOnlyEnvVarsAtRuntime();
 
   const response = NextResponse.next();
 
-  // Add security headers to all responses
+  // すべてのレスポンスにセキュリティヘッダーを付与
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 
-  // Add additional security headers for API routes
+  // API ルートには追加のセキュリティヘッダーを付与
   if (request.nextUrl.pathname.startsWith("/api/")) {
     response.headers.set("X-Robots-Tag", "noindex");
   }
@@ -24,10 +24,10 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * 以下のパスを除く全てのリクエストに適用する:
+     * - _next/static (静的ファイル)
+     * - _next/image (画像最適化ファイル)
+     * - favicon.ico (ファビコン)
      */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],

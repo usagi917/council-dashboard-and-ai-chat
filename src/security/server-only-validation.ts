@@ -1,65 +1,73 @@
 /**
- * Security validation utility to ensure sensitive API keys are never exposed client-side
+ * センシティブな API キーがクライアント側に公開されていないか検証するユーティリティ
  */
 
 interface ValidationResult {
   isValid: boolean;
   violations: string[];
 }
-
-const SENSITIVE_KEYS = [
+// サーバーのみで使用すべき環境変数名
+const SERVER_ONLY_ENV_KEYS = [
   "OPENAI_API_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
   "IG_GRAPH_TOKEN_LONG_LIVED",
   "FB_APP_CLIENT_TOKEN",
 ] as const;
 
+// クライアント側に公開される環境変数の接頭辞
+const CLIENT_ENV_PREFIX = "NEXT_PUBLIC_";
+
+interface ClientExposureCheck {
+  isMatch: (value: string, envKey: string) => boolean;
+  violation: (envKey: string) => string;
+}
+
+// クライアント公開用の環境変数から検出する危険なパターン一覧
+const CLIENT_EXPOSURE_CHECKS: ClientExposureCheck[] = [
+  {
+    isMatch: (value) => /^sk[-_]/.test(value),
+    violation: (envKey) =>
+      `OpenAI key pattern detected in client-exposed variable: ${envKey}`,
+  },
+  {
+    isMatch: (value, envKey) =>
+      /^eyJ/.test(value) &&
+      value.length > 100 &&
+      envKey !== "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    violation: (envKey) =>
+      `Potential service role key detected in client-exposed variable: ${envKey}`,
+  },
+  {
+    isMatch: (value) => /^(IGQ|EAA)/.test(value),
+    violation: (envKey) =>
+      `Instagram token pattern detected in client-exposed variable: ${envKey}`,
+  },
+];
+
 /**
- * Validates that sensitive API keys are not accidentally exposed as NEXT_PUBLIC_ variables
+ * サーバー専用の環境変数が誤ってクライアントに公開されていないか検証する
  */
-export function validateServerOnlyKeys(): ValidationResult {
+export function validateServerOnlyEnvVars(): ValidationResult {
   const violations: string[] = [];
 
-  // Check if any sensitive keys are exposed as NEXT_PUBLIC_
-  SENSITIVE_KEYS.forEach((keyName) => {
-    const publicKeyName = `NEXT_PUBLIC_${keyName}`;
+  // 明示的にサーバー専用と定めたキーが公開されていないか確認
+  SERVER_ONLY_ENV_KEYS.forEach((keyName) => {
+    const publicKeyName = `${CLIENT_ENV_PREFIX}${keyName}`;
     if (process.env[publicKeyName]) {
       violations.push(`${keyName} exposed as ${publicKeyName}`);
     }
   });
 
-  // Check for common patterns of key exposure
-  Object.keys(process.env).forEach((envKey) => {
-    if (envKey.startsWith("NEXT_PUBLIC_")) {
-      const value = process.env[envKey];
-      if (value) {
-        // Check for OpenAI key patterns
-        if (value.startsWith("sk-") || value.startsWith("sk_")) {
-          violations.push(
-            `OpenAI key pattern detected in client-exposed variable: ${envKey}`
-          );
-        }
-
-        // Check for Supabase service role key patterns (JWT starting with eyJ)
-        // But exclude NEXT_PUBLIC_SUPABASE_ANON_KEY which is meant to be client-exposed
-        if (
-          value.startsWith("eyJ") &&
-          value.length > 100 &&
-          envKey !== "NEXT_PUBLIC_SUPABASE_ANON_KEY"
-        ) {
-          violations.push(
-            `Potential service role key detected in client-exposed variable: ${envKey}`
-          );
-        }
-
-        // Check for Instagram long-lived token patterns
-        if (value.startsWith("IGQ") || value.startsWith("EAA")) {
-          violations.push(
-            `Instagram token pattern detected in client-exposed variable: ${envKey}`
-          );
-        }
-      }
+  // クライアント公開用の環境変数を走査して危険なパターンを検出
+  Object.entries(process.env).forEach(([envKey, value]) => {
+    if (!envKey.startsWith(CLIENT_ENV_PREFIX) || typeof value !== "string") {
+      return;
     }
+    CLIENT_EXPOSURE_CHECKS.forEach(({ isMatch, violation }) => {
+      if (isMatch(value, envKey)) {
+        violations.push(violation(envKey));
+      }
+    });
   });
 
   return {
@@ -69,10 +77,10 @@ export function validateServerOnlyKeys(): ValidationResult {
 }
 
 /**
- * Throws an error if any violations are found - useful for CI/startup checks
+ * 1つでも違反があれば例外を投げる（CI や起動時チェック向け）
  */
-export function assertServerOnlyKeys(): void {
-  const result = validateServerOnlyKeys();
+export function assertServerOnlyEnvVars(): void {
+  const result = validateServerOnlyEnvVars();
 
   if (!result.isValid) {
     throw new Error(
@@ -82,23 +90,23 @@ export function assertServerOnlyKeys(): void {
 }
 
 /**
- * Runtime check that can be called during app initialization (server-side only)
+ * アプリ初期化時に実行するランタイムチェック（サーバー側のみ）
  */
-export function checkServerOnlyKeysAtRuntime(): void {
-  // Only run on server-side
-  if (typeof window === "undefined") {
-    const result = validateServerOnlyKeys();
+export function verifyServerOnlyEnvVarsAtRuntime(): void {
+  // サーバー側のみで実行
+  if (typeof window !== "undefined") return;
 
-    if (!result.isValid) {
-      console.error("🚨 Security Alert: Sensitive API keys may be exposed!");
-      result.violations.forEach((violation) => {
-        console.error(`  - ${violation}`);
-      });
+  const result = validateServerOnlyEnvVars();
 
-      // In production, we might want to throw instead of just logging
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("Security violation: API keys exposed to client-side");
-      }
+  if (!result.isValid) {
+    console.error("🚨 Security Alert: Sensitive API keys may be exposed!");
+    result.violations.forEach((violation) => {
+      console.error(`  - ${violation}`);
+    });
+
+    // 本番環境ではログだけでなく例外を投げる
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Security violation: API keys exposed to client-side");
     }
   }
 }
