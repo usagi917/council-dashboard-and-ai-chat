@@ -265,10 +265,17 @@ describe("Loading and State Components", () => {
       const buttons = screen.getAllByRole("button");
       buttons.forEach((button) => {
         expect(button).toHaveClass(
-          "bg-blue-600",
+          "bg-primary-600",
           "text-white",
-          "hover:bg-blue-700",
-          "transition-colors"
+          "hover:bg-primary-700",
+          "transition-colors",
+          "px-6",
+          "py-2",
+          "rounded-lg",
+          "focus:outline-none",
+          "focus:ring-2",
+          "focus:ring-primary-500",
+          "focus:ring-offset-2"
         );
       });
     });
@@ -287,12 +294,14 @@ describe("Loading and State Components", () => {
       expect(errorTitle).toHaveClass(
         "text-lg",
         "font-semibold",
-        "text-gray-900"
+        "text-secondary-900",
+        "mb-2"
       );
       expect(emptyStateTitle).toHaveClass(
         "text-lg",
         "font-semibold",
-        "text-gray-900"
+        "text-secondary-900",
+        "mb-2"
       );
     });
   });
