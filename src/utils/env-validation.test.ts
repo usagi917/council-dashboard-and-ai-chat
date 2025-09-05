@@ -8,8 +8,8 @@ describe("Environment Validation", () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    // Reset process.env to a clean state
-    process.env = { ...originalEnv };
+    // Reset to minimal environment to avoid interference from host variables
+    process.env = {};
   });
 
   afterEach(() => {
