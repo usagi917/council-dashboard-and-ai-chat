@@ -8,8 +8,8 @@ describe("Environment Validation", () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    // Reset process.env to a clean state
-    process.env = { ...originalEnv };
+    // Reset process.env to a clean state without external variables
+    process.env = {} as NodeJS.ProcessEnv;
   });
 
   afterEach(() => {
